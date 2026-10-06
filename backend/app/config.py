@@ -8,7 +8,14 @@ env_path = backend_dir / ".env"
 load_dotenv(dotenv_path=env_path)
 
 BASE_DIR = backend_dir
-DATA_DIR = BASE_DIR / "data"
+
+# On Vercel / serverless environments, only /tmp is writable
+is_serverless = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+if is_serverless:
+    DATA_DIR = Path("/tmp/studybuddy_data")
+else:
+    DATA_DIR = Path(os.getenv("DATA_DIR", BASE_DIR / "data"))
+
 UPLOAD_DIR = DATA_DIR / "uploads"
 VECTOR_STORE_DIR = DATA_DIR / "vector_store"
 DB_PATH = DATA_DIR / "studybuddy.db"
